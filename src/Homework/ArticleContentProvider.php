@@ -5,6 +5,18 @@ namespace App\Homework;
 
 class ArticleContentProvider implements ArticleContentProviderInterface
 {
+    private $word_with_bold;
+    private $text;
+
+    /**
+     * @param string[] $paragraphs
+     */
+    public function __construct($word_with_bold)
+    {
+        $this->word_with_bold = $word_with_bold;
+    }
+
+
     private $paragraphs = ['Lorem ipsum новости dolor sit amet, consectetur adipiscing elit, sed
                             do eiusmod tempor incididunt [Сосискин](/) ut labore et dolore magna aliqua.
                             Purus viverra accumsan in nisl. Diam новости vulputate ut pharetra sit amet aliquam. Faucibus a
@@ -36,7 +48,8 @@ class ArticleContentProvider implements ArticleContentProviderInterface
                              neque vitae tempus политика quam pellentesque nec nam еда aliquam. Odio pellentesque diam volutpat commodo
                              sed egestas egestas. Egestas dui id ornare arcu odio ut.'];
 
-    private $text;
+
+
 
     public function get(int $paragraph, string $word = null, int $wordsCount = 0): string
     {
@@ -44,10 +57,10 @@ class ArticleContentProvider implements ArticleContentProviderInterface
             while (substr_count(mb_strtolower($this->text), mb_strtolower($word)) < $wordsCount) {
                 $this->text = $this->text . '<br>' . $this->paragraphs[array_rand($this->paragraphs, 1)];
             }
-            if ($_ENV['MARK_ARTICLE_WORDS_WITH_BOLD'] === 'bold') {
+            if ($this->word_with_bold === 'bold') {
                 $this->text = preg_replace("/($word)/ui", '**' . $word . '**', $this->text);
             } elseif
-            ($_ENV['MARK_ARTICLE_WORDS_WITH_BOLD'] === 'italic') {
+            ($this->word_with_bold === 'italic') {
                 $this->text = preg_replace("/($word)/ui", '*' . $word . '*', $this->text);
             }
         } else {
