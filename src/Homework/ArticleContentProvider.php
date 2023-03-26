@@ -8,14 +8,10 @@ class ArticleContentProvider implements ArticleContentProviderInterface
     private $word_with_bold;
     private $text;
 
-    /**
-     * @param string[] $paragraphs
-     */
     public function __construct($word_with_bold)
     {
         $this->word_with_bold = $word_with_bold;
     }
-
 
     private $paragraphs = ['Lorem ipsum новости dolor sit amet, consectetur adipiscing elit, sed
                             do eiusmod tempor incididunt [Сосискин](/) ut labore et dolore magna aliqua.
@@ -48,9 +44,6 @@ class ArticleContentProvider implements ArticleContentProviderInterface
                              neque vitae tempus политика quam pellentesque nec nam еда aliquam. Odio pellentesque diam volutpat commodo
                              sed egestas egestas. Egestas dui id ornare arcu odio ut.'];
 
-
-
-
     public function get(int $paragraph, string $word = null, int $wordsCount = 0): string
     {
         if ($word !== null) {
@@ -71,6 +64,5 @@ class ArticleContentProvider implements ArticleContentProviderInterface
 
         return $this->text;
     }
-
 
 }
