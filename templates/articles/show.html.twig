@@ -1,10 +1,19 @@
 {% extends 'base_content.html.twig' %}
+
+{% block meta %}
+    {% if article.keywords %}
+        {{ parent() }}
+        <meta name="keywords" content="{{ article.keywords }}">
+    {% endif %}
+{% endblock %}
+
 {% block stylesheet %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('css/detail.css') }}">
 {% endblock %}
+
 {% block title %}
-    {{ rand_article['slug'] }}
+    {{ article.title }}
 {% endblock %}
 
 {% block show_row %}featured-border no-gutters{% endblock %}
@@ -15,29 +24,34 @@
         <div class="col-sm-12 p-2">
             <div class="media d-flex align-content-center">
                 <img class="article-detail-image align-self-start mr-3 rounded"
-                     src="{{ asset(rand_article['image']) }}">
+                     src="{{ article.imagePath }}">
                 <div class="media-body d-inline-block align-self-center">
-                    <h1 class="mb-2">{{ rand_article['title'] }}</h1>
+                    <h1 class="mb-2">{{ article.title }}</h1>
                     <div class="d-flex mb-2">
                         <div class="text-muted align-self-center">
                             <img class="article-author-img rounded-circle mr-2"
-                                 src="https://robohash.org/флекс_абсолютович.jpg?set=set3">
-                            Флекс Абсолютович
+                                 src="{{ article.authorAvatarPath }}">
+                            {{ article.author }}
                         </div>
-                        <div class="text-muted align-self-center ml-4"><i class="fas fa-clock size-is-"></i> 1 месяц
-                            назад
+                        <div class="text-muted align-self-center ml-4"><i class="fas fa-clock size-is-"></i>
+                            {{ article.publishedAt ?  article.publishedAt|ago : 'неопубликована' }}
                         </div>
                     </div>
                     <div class="mb-2 d-flex">
-                        <span class="badge badge-pill badge-secondary mr-2">Балбес</span>
-                        <span class="badge badge-pill badge-secondary mr-2">Криворучка</span>
-                        <span class="badge badge-pill badge-secondary mr-2">Рукопоп</span>
+                        <span class="badge badge-pill badge-secondary mr-2">{{ article.keywords }}</span>
                     </div>
                     <div class="mb-2">
-                        <div class="text-muted align-self-center article-detail-arrows">
-                            120
-                            <button class="btn btn-success ml-3"><i class="fas fa-arrow-up"></i></button>
-                            <button class="btn btn-danger"><i class="fas fa-arrow-down"></i></button>
+                        <div class="text-muted align-self-center article-detail-arrows"
+                             data-id="voteBlock">
+                            <span data-id="voteCount">
+                                {{ article.voteCount }}
+                            </span>
+                            <button class="btn btn-success ml-3" data-id="voteButton"
+                                    data-href="{{ path('app_article_vote', {slug: article.slug, type:'up'}) }}">
+                                <i class="fas fa-arrow-up"></i></button>
+                            <button class="btn btn-danger" data-id="voteButton"
+                                    data-href="{{ path('app_article_vote', {slug: article.slug, type:'down'}) }}">
+                                <i class="fas fa-arrow-down"></i></button>
                         </div>
                     </div>
                 </div>
@@ -45,7 +59,7 @@
         </div>
 
         <div class="col-12 mt-2 mb-4 article-content">
-            {{ articleContent|cached_markdown }}
+            {{ article.body|cached_markdown }}
         </div>
 
         <div class="col-sm-12 mb-4">
@@ -83,4 +97,8 @@
         </div>
     </div>
 
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/like.js') }}"></script>
 {% endblock %}

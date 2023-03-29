@@ -6,7 +6,6 @@ namespace App\Homework;
 class ArticleContentProvider implements ArticleContentProviderInterface
 {
     private $word_with_bold;
-    private $text;
 
     public function __construct($word_with_bold)
     {
@@ -44,25 +43,40 @@ class ArticleContentProvider implements ArticleContentProviderInterface
                              neque vitae tempus политика quam pellentesque nec nam еда aliquam. Odio pellentesque diam volutpat commodo
                              sed egestas egestas. Egestas dui id ornare arcu odio ut.'];
 
-    public function get(int $paragraph, string $word = null, int $wordsCount = 0): string
+    public function get(int $paragraphs, string $word = null, int $wordsCount = 0): string
     {
-        if ($word !== null) {
-            while (substr_count(mb_strtolower($this->text), mb_strtolower($word)) < $wordsCount) {
-                $this->text = $this->text . '<br>' . $this->paragraphs[array_rand($this->paragraphs, 1)];
-            }
-            if ($this->word_with_bold === 'bold') {
-                $this->text = preg_replace("/($word)/ui", '**' . $word . '**', $this->text);
-            } elseif
-            ($this->word_with_bold === 'italic') {
-                $this->text = preg_replace("/($word)/ui", '*' . $word . '*', $this->text);
-            }
-        } else {
-            for ($i = 0; $i < $paragraph; $i++) {
-                $this->text = $this->text . '<br>' . $this->paragraphs[array_rand($this->paragraphs, 1)];
-            }
+        $texts = [];
+        for ($i = 0; $i < $paragraphs; $i++) {
+            $texts[] = $this->paragraphs[rand(0, count($this->paragraphs) - 1)];
         }
 
-        return $this->text;
+        $text = implode(PHP_EOL . PHP_EOL, $texts);
+
+        if ($word && $wordsCount) {
+            $text = $this->addWords($text, $word, $wordsCount);
+        }
+
+        return $text;
     }
 
+    private function addWords(string $text, string $word, int $wordsCount)
+    {
+        $words = explode(' ', $text);
+
+        for ($i = 0; $i < $wordsCount; $i++) {
+            $count = count($words);
+
+            $position = rand(0, $count - 1);
+
+            array_splice($words, $position, 0, $this->markdownWord($word));
+        }
+
+        return implode(' ', $words);
+    }
+
+    private function markdownWord($word)
+    {
+        $marker = $this->word_with_bold ? '**' : '*';
+        return $marker . $word . $marker;
+    }
 }
