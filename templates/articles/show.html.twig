@@ -1,112 +1,104 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_content.html.twig' %}
+
+{% block meta %}
+    {% if article.keywords %}
+        {{ parent() }}
+        <meta name="keywords" content="{{ article.keywords }}">
+    {% endif %}
+{% endblock %}
+
 {% block stylesheet %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('css/detail.css') }}">
 {% endblock %}
+
 {% block title %}
-{{ rand_article['slug'] }}
+    {{ article.title }}
 {% endblock %}
 
-{% block body %}
-<div class="container">
-    <div class="row">
+{% block show_row %}featured-border no-gutters{% endblock %}
 
-        <div class="col-12">
+{% block content %}
 
-            <div class="row no-gutters border flex-md-row mb-4 shadow-sm bg-white featured-border">
-                <div class="article-detail col-sm-12">
-                    <div class="col-sm-12 p-2">
-                        <div class="media d-flex align-content-center">
-                            <img class="article-detail-image align-self-start mr-3 rounded" src="{{asset(rand_article['image']) }}">
-                            <div class="media-body d-inline-block align-self-center">
-                                <h1 class="mb-2">{{rand_article['title']}}</h1>
-                                <div class="d-flex mb-2">
-                                    <div class="text-muted align-self-center">
-                                        <img class="article-author-img rounded-circle mr-2" src="https://robohash.org/флекс_абсолютович.jpg?set=set3">
-                                        Флекс Абсолютович
-                                    </div>
-                                    <div class="text-muted align-self-center ml-4"><i class="fas fa-clock size-is-"></i> 1 месяц назад</div>
-                                </div>
-                                <div class="mb-2 d-flex">
-                                    <span class="badge badge-pill badge-secondary mr-2">Балбес</span>
-                                    <span class="badge badge-pill badge-secondary mr-2">Криворучка</span>
-                                    <span class="badge badge-pill badge-secondary mr-2">Рукопоп</span>
-                                </div>
-                                <div class="mb-2">
-                                    <div class="text-muted align-self-center article-detail-arrows">
-                                        120
-                                        <button class="btn btn-success ml-3"><i class="fas fa-arrow-up"></i></button>
-                                        <button class="btn btn-danger"><i class="fas fa-arrow-down"></i></button>
-                                    </div>
-                                </div>
-                            </div>
+    <div class="article-detail col-sm-12">
+        <div class="col-sm-12 p-2">
+            <div class="media d-flex align-content-center">
+                <img class="article-detail-image align-self-start mr-3 rounded"
+                     src="{{ article.imagePath }}">
+                <div class="media-body d-inline-block align-self-center">
+                    <h1 class="mb-2">{{ article.title }}</h1>
+                    <div class="d-flex mb-2">
+                        <div class="text-muted align-self-center">
+                            <img class="article-author-img rounded-circle mr-2"
+                                 src="{{ article.authorAvatarPath }}">
+                            {{ article.author }}
+                        </div>
+                        <div class="text-muted align-self-center ml-4"><i class="fas fa-clock size-is-"></i>
+                            {{ article.publishedAt ?  article.publishedAt|ago : 'неопубликована' }}
                         </div>
                     </div>
-
-
-                    <div class="col-12 mt-2 mb-4">
-                        <p>Lorem ipsum <strong>кофе</strong> dolor sit amet, consectetur adipiscing elit, sed
-                            do eiusmod tempor incididunt <a href="/">Фронтенд Абсолютович</a> ut labore et dolore magna aliqua.
-                            Purus viverra accumsan in nisl. Diam vulputate ut pharetra sit amet aliquam. Faucibus a
-                            pellentesque sit amet porttitor eget dolor morbi non. Est ultricies integer quis auctor
-                            elit sed. Tristique nulla aliquet enim tortor at. Tristique et egestas quis ipsum. Consequat semper viverra nam
-                            libero. Lectus quam id leo in vitae turpis. In eu mi bibendum neque egestas congue
-                            quisque egestas diam. <strong>кофе</strong> blandit turpis cursus in hac habitasse platea dictumst quisque.</p>
-
-                        <p>Ullamcorper malesuada proin libero nunc consequat interdum varius sit amet. Odio pellentesque
-                            diam volutpat commodo sed egestas. Eget nunc lobortis mattis aliquam. Cursus vitae congue
-                            mauris rhoncus aenean vel. Pretium viverra suspendisse potenti nullam ac tortor vitae.
-                            A pellentesque sit amet porttitor eget dolor. Nisl nunc mi ipsum faucibus vitae. Purus sit amet
-                            luctus venenatis lectus magna fringilla urna. Sit amet tellus cras adipiscing enim. Euismod
-                            nisi porta lorem mollis aliquam ut porttitor leo.</p>
-
-                        <p>Morbi blandit cursus risus at ultrices. Adipiscing vitae proin sagittis nisl rhoncus mattis
-                            rhoncus. Sit amet commodo nulla facilisi. In fermentum et sollicitudin ac orci phasellus
-                            egestas tellus. Sit amet risus nullam eget felis. Dapibus ultrices in iaculis nunc sed
-                            augue lacus viverra. Dictum non consectetur a erat nam at. Odio ut enim blandit volutpat
-                            maecenas. Turpis cursus in hac habitasse platea. Etiam erat velit scelerisque in. Auctor
-                            neque vitae tempus quam pellentesque nec nam aliquam. Odio pellentesque diam volutpat commodo
-                            sed egestas egestas. Egestas dui id ornare arcu odio ut.</p>
-
+                    <div class="mb-2 d-flex">
+                        <span class="badge badge-pill badge-secondary mr-2">{{ article.keywords }}</span>
                     </div>
-
-
-                    <div class="col-sm-12 mb-4">
-                        <h3><i class="pr-3 far fa-comment text-secondary"></i>Комментарии ({{ comments|length}})</h3>
-                        <hr>
-
-                        <div class="row mb-4">
-                            <div class="col-sm-12">
-                                <div class="comment-container align-self-start col-sm-6">
-                                    <div class="form-group">
-                                        <textarea class="form-control" rows="2"></textarea>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Комментировать</button>
-                                </div>
-                            </div>
+                    <div class="mb-2">
+                        <div class="text-muted align-self-center article-detail-arrows"
+                             data-id="voteBlock">
+                            <span data-id="voteCount">
+                                {{ article.voteCount }}
+                            </span>
+                            <button class="btn btn-success ml-3" data-id="voteButton"
+                                    data-href="{{ path('app_article_vote', {slug: article.slug, type:'up'}) }}">
+                                <i class="fas fa-arrow-up"></i></button>
+                            <button class="btn btn-danger" data-id="voteButton"
+                                    data-href="{{ path('app_article_vote', {slug: article.slug, type:'down'}) }}">
+                                <i class="fas fa-arrow-down"></i></button>
                         </div>
-                        {% for name, comment in comments %}
-                        <div class="row mt-2">
-                            <div class="col-sm-12">
-                                <div class="media">
-                                    <img class="align-self-start comment-img rounded-circle" src="{{ asset('images/profile.png') }}">
-                                    <div class="media-body align-self-start col-sm-6">
-                                        <b>{{ name }}</b>
-                                        <small>11 дней назад</small>
-                                        <br>
-                                        <span class="comment"> {{ comment }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-
                     </div>
                 </div>
             </div>
-
         </div>
 
+        <div class="col-12 mt-2 mb-4 article-content">
+            {{ article.body|cached_markdown }}
+        </div>
+
+        <div class="col-sm-12 mb-4">
+            <h3><i class="pr-3 far fa-comment text-secondary"></i>Комментарии ({{ comments|length }})</h3>
+            <hr>
+
+            <div class="row mb-4">
+                <div class="col-sm-12">
+                    <div class="comment-container align-self-start col-sm-6">
+                        <div class="form-group">
+                            <label>
+                                <textarea class="form-control" rows="2"></textarea>
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Комментировать</button>
+                    </div>
+                </div>
+            </div>
+            {% for name, comment in comments %}
+                <div class="row mt-2">
+                    <div class="col-sm-12">
+                        <div class="media">
+                            <img class="align-self-start comment-img rounded-circle"
+                                 src="{{ asset('images/profile.png') }}">
+                            <div class="media-body align-self-start col-sm-6">
+                                <b>{{ name }}</b>
+                                <small>11 дней назад</small>
+                                <br>
+                                <span class="comment"> {{ comment }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     </div>
-</div>
+
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/like.js') }}"></script>
 {% endblock %}

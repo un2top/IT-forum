@@ -1,0 +1,32 @@
+{% extends 'base_content.html.twig' %}
+{% block title %}Генерация контента статьи{% endblock %}
+{% block admin_articles %}p-4{% endblock %}
+{% block content %}
+
+    <div class="col-12 p-0">
+    <div class="admin-header-with-button">
+        <h1>Генерация контента статьи</h1>
+    </div>
+
+    <form name="forms">
+        <div class="mb-3">
+            <label for="col_paragraph" class="form-label">Количество параграфов</label>
+            <input type="number" name="col_paragraph" class="form-control" id="col_paragraph"
+                   value="{{ app.request.query.get('col_paragraph') }}">
+        </div>
+        <div class="mb-3">
+            <label for="inputs" class="form-label">Вставляемое слово</label>
+            <input type="text" name="inputs" class="form-control" id="inputs"
+                   value="{{ app.request.query.get('inputs') }}">
+        </div>
+        <div class="mb-3">
+            <label for="col_repeat" class="form-label">Количество повторений вставляемого слова</label>
+            <input type="number" name="col_repeat" class="form-control" id="col_repeat"
+                   value="{{ app.request.query.get('col_repeat') }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <div class="col-12 mt-2 mb-4 article-content">
+        {{ articleContent|cached_markdown }}
+    </div>
+{% endblock %}
