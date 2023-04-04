@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Comment;
 use Doctrine\Persistence\ObjectManager;
 use App\Entity\Article;
 
@@ -41,7 +42,7 @@ class ArticleFixtures extends BaseFixtures
 
     public function loadData(ObjectManager $manager)
     {
-        $this->createMany(Article::class, 10, function (Article $article) {
+        $this->createMany(Article::class, 10, function (Article $article) use ($manager) {
             $article
                 ->setTitle($this->faker->randomElement(self::$articleTitles))
                 ->setDescription($this->faker->text(75))
@@ -56,6 +57,35 @@ class ArticleFixtures extends BaseFixtures
             } else {
                 $article->setBody($this->articleContent->get($this->faker->numberBetween(2, 10)));
             }
+            for ($i = 0; $i < $this->faker->numberBetween(2, 10); $i++) {
+                $this->addComment($article, $manager);
+            }
+
         });
+    }
+
+    /**
+     * @param Article $article
+     * @param ObjectManager $manager
+     * @return void
+     */
+    private function addComment(Article $article, ObjectManager $manager): void
+    {
+        $comment = (new Comment())
+            ->setAuthorName($this->faker->randomElement(self::$articleAuthors))
+            ->setCreatedAt($this->faker->dateTimeBetween('-100 days', '-1 day'))
+            ->setArticle($article);
+
+        if ($this->faker->boolean(70)) {
+            $keyWord = $this->faker->randomElement(self::$articleKeyWord);
+            $comment->setContent($this->commentContentProvider->get($keyWord, $this->faker->numberBetween(1, 5)));
+        } else {
+            $comment->setContent($this->commentContentProvider->get());
+        }
+        if ($this->faker->boolean) {
+            $comment->setDeletedAt($this->faker->dateTimeThisMonth);
+        }
+
+        $manager->persist($comment);
     }
 }

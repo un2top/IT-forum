@@ -5,11 +5,16 @@ namespace App\Homework;
 
 class ArticleContentProvider implements ArticleContentProviderInterface
 {
+    /**
+     * @var PasteWords
+     */
+    private $past;
     private $word_with_bold;
 
-    public function __construct($word_with_bold)
+    public function __construct($word_with_bold, PasteWords $past)
     {
         $this->word_with_bold = $word_with_bold;
+        $this->past = $past;
     }
 
     private $paragraphs = ['Lorem ipsum новости dolor sit amet, consectetur adipiscing elit, sed
@@ -53,30 +58,11 @@ class ArticleContentProvider implements ArticleContentProviderInterface
         $text = implode(PHP_EOL . PHP_EOL, $texts);
 
         if ($word && $wordsCount) {
-            $text = $this->addWords($text, $word, $wordsCount);
+            $marker = $this->word_with_bold ? '**' : '*';
+            $word = $marker . $word . $marker;
+            $text = $this->past->paste($text, $word, $wordsCount);
         }
-
         return $text;
     }
 
-    private function addWords(string $text, string $word, int $wordsCount)
-    {
-        $words = explode(' ', $text);
-
-        for ($i = 0; $i < $wordsCount; $i++) {
-            $count = count($words);
-
-            $position = rand(0, $count - 1);
-
-            array_splice($words, $position, 0, $this->markdownWord($word));
-        }
-
-        return implode(' ', $words);
-    }
-
-    private function markdownWord($word)
-    {
-        $marker = $this->word_with_bold ? '**' : '*';
-        return $marker . $word . $marker;
-    }
 }
