@@ -20,10 +20,15 @@ class CommentsController extends AbstractController
             $request->query->get('q'),
             $request->query->has('showDeleted')
         );
+        $countString = 20;
+        if ($request->query->get('count')) {
+            $countString = $request->query->get('count');
+        }
+
         $pagination = $paginator->paginate(
             $comments, /* query NOT result */
             $request->query->getInt('page', 1), /*page number*/
-            10 /*limit per page*/
+            $countString /*limit per page*/
         );
 
         return $this->render('admin/comments/index.html.twig', [

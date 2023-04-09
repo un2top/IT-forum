@@ -20,13 +20,17 @@ class TagsController extends AbstractController
         $tags = $tagRepository->findAllWithSearchQuery(
             $request->query->get('q'),
             $request->query->has('showDeleted'),
-
         );
+
+        $countString = 20;
+        if ($request->query->get('count')) {
+            $countString = $request->query->get('count');
+        }
 
         $pagination = $paginator->paginate(
             $tags, /* query NOT result */
             $request->query->getInt('page', 1), /*page number*/
-            20 /*limit per page*/
+            $countString /*limit per page*/
         );
 
 

@@ -7,6 +7,7 @@
             <th>Тег</th>
             <th>Описание</th>
             <th>Количество статей</th>
+            <th>Название статей</th>
         </tr>
         </thead>
         <tbody>
@@ -15,6 +16,8 @@
                 <td>{{ tag.name }}</a></td>
                 <td>{{ tag.slug }} {% if tag.deletedAt %} <b>DELETED</b> {% endif %}</td>
                 <td>{{ tag.articles|length }}</td>
+                <td>{% for articlename in tag.articles %}
+                        {{ articlename.title }}<br>{% endfor %}</td>
             </tr>
         {% else %}
             <tr>
