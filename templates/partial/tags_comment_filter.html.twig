@@ -1,43 +1,55 @@
-<form>
-    <div class="input-group mb-3">
-        <input type="text"
-               name="q"
-               class="form-control"
-               placeholder="Найти..."
-               value="{{ app.request.query.get('q') }}"
-        >
-        <div class="input-group-append">
-            <button type="submit" class="btn btn-outline-secondary"><i class="fa fa-search"></i>
-            </button>
+{% extends 'base_content.html.twig' %}
+{% block admin_articles %}p-4{% endblock %}
+{% block content %}
+    <div class="col-12 p-0">
+        <div class="admin-header-with-button">
+            <h1>{% block admin_title %}{% endblock %}</h1>
         </div>
-    </div>
-    <div class="input-group mb-3">
-        <div class="form-check">
-            <input type="checkbox"
-                   name="showDeleted"
-                   class="form-check-input"
-                   {% if app.request.query.has('showDeleted') %}checked{% endif %}
-            >
-            <label class="form-check-label">Показать удаленные</label>
-        </div>
-    </div>
-    <div class="input-group mb-3">
-        <div class="dropdown">
-            <button type="submit"
-                    class="btn btn-secondary dropdown-toggle"
-                    data-toggle="dropdown">
-                Количество элементов
-            </button>
-            <div class="dropdown-menu">
-                <input type="checkbox" class="dropdown-item" value="s" >10 <br>
-
-                <a class="dropdown-item" href="#">
-                    20
-                </a>
-                <a class="dropdown-item" href="#">
-                    50
-                </a>
+        <form>
+            <div class="input-group mb-3">
+                <input type="text"
+                       name="q"
+                       class="form-control"
+                       placeholder="Найти..."
+                       value="{{ app.request.query.get('q') }}"
+                >
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-outline-secondary"><i class="fa fa-search"></i>
+                    </button>
+                </div>
             </div>
-        </div>
+            <div class="input-group mb-3">
+                <div class="form-check">
+                    <input type="checkbox"
+                           name="showDeleted"
+                           class="form-check-input"
+                           {% if app.request.query.has('showDeleted') %}checked{% endif %}
+                    >
+                    <label class="form-check-label">Показать удаленные</label>
+                </div>
+            </div>
+            <div class="input-group mb-3">
+                <div class="dropdown">
+                    <button type="submit"
+                            class="btn btn-secondary dropdown-toggle"
+                            data-toggle="dropdown">
+                        Количество элементов
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{{ app.request.query.get('q') }}">
+                            10
+                        </a>
+                        <a class="dropdown-item" href="#">
+                            20
+                        </a>
+                        <a class="dropdown-item" href="#">
+                            50
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+        {% block admin_table %} {% endblock %}
     </div>
-</form>
+    {{ knp_pagination_render(pagination) }}
+{% endblock %}

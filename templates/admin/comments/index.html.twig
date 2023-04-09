@@ -1,39 +1,30 @@
-{% extends 'base_content.html.twig' %}
-{% block admin_articles %}p-4{% endblock %}
-{% block content %}
-
-    <div class="col-12 p-0">
-        <div class="admin-header-with-button">
-            <h1>Управление Статьями</h1>
-            <div><a class="btn btn-primary" href="#">Создать новую статью</a></div>
-        </div>
-        {% include 'partial/tags_comment_filter.html.twig' %}
-        <table class="table table-striped">
-            <thead>
+{% extends 'partial/tags_comment_filter.html.twig' %}
+{% block admin_title %}Управление Статьями{% endblock %}
+{% block admin_table %}
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Статья</th>
+            <th>Описание</th>
+            <th>Автор</th>
+            <th>Дата</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for comment in pagination %}
             <tr>
-                <th>Статья</th>
-                <th>Описание</th>
-                <th>Автор</th>
-                <th>Дата</th>
+                <td><a href="{{ path('app_article_show', {slug: comment.article.slug}) }}">
+                        {{ comment.article.title }}</a></td>
+                <td>{{ comment.content|u.truncate (40,'...') }}</td>
+                <td>{{ comment.authorName }}</td>
+                <td>{{ comment.createdAt|ago }} {% if comment.deletedAt %} DELETED {% endif %}</td>
             </tr>
-            </thead>
-            <tbody>
-            {% for comment in pagination %}
-                <tr>
-                    <td><a href="{{ path('app_article_show', {slug: comment.article.slug}) }}">
-                            {{ comment.article.title }}</a></td>
-                    <td>{{ comment.content|u.truncate (40,'...') }}</td>
-                    <td>{{ comment.authorName }}</td>
-                    <td>{{ comment.createdAt|ago }} {% if comment.deletedAt %} DELETED {% endif  %}</td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="4">Нет коментариев</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+        {% else %}
+            <tr>
+                <td colspan="4">Нет коментариев</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
-{{ knp_pagination_render(pagination) }}
 {% endblock %}
