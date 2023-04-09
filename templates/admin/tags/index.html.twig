@@ -1,0 +1,38 @@
+{% extends 'base_content.html.twig' %}
+{% block admin_articles %}p-4{% endblock %}
+{% block content %}
+
+    <div class="col-12 p-0">
+        <div class="admin-header-with-button">
+            <h1>Управление тегами</h1>
+        </div>
+
+        {% include 'partial/tags_comment_filter.html.twig' %}
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Тег</th>
+                <th>Описание</th>
+                <th>Количество статей</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for tag in pagination %}
+                <tr>
+                    <td>{{ tag.name }}</a></td>
+                    <td>{{ tag.slug }} {% if tag.deletedAt %} <b>DELETED</b> {% endif %}</td>
+                    <td>{{ tag.articles|length }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4">Нет коментариев</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+    {{ knp_pagination_render(pagination) }}
+{% endblock %}

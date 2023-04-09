@@ -2,26 +2,26 @@
 
 namespace App\Repository;
 
-use App\Entity\Comment;
+use App\Entity\Tag;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Comment>
+ * @extends ServiceEntityRepository<Tag>
  *
- * @method Comment|null find($id, $lockMode = null, $lockVersion = null)
- * @method Comment|null findOneBy(array $criteria, array $orderBy = null)
- * @method Comment[]    findAll()
- * @method Comment[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Tag|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Tag|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Tag[]    findAll()
+ * @method Tag[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CommentRepository extends ServiceEntityRepository
+class TagRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Comment::class);
+        parent::__construct($registry, Tag::class);
     }
 
-    public function add(Comment $entity, bool $flush = false): void
+    public function add(Tag $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -30,7 +30,7 @@ class CommentRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(Comment $entity, bool $flush = false): void
+    public function remove(Tag $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -41,10 +41,10 @@ class CommentRepository extends ServiceEntityRepository
 
     public function findAllWithSearchQuery(?string $search, bool $withSoftDeletes = false)
     {
-        $qb = $this->createQueryBuilder('c');
+        $qb = $this->createQueryBuilder('t');
         if ($search) {
             $qb
-                ->andWhere('c.content LIKE :search OR c.authorName LIKE :search OR a.title LIKE :search')
+                ->andWhere('t.slug LIKE :search OR t.name LIKE :search')
                 ->setParameter('search', "%$search%");
         }
 
@@ -53,8 +53,9 @@ class CommentRepository extends ServiceEntityRepository
         }
 
         return $qb
-            ->innerJoin('c.article', 'a')
+            ->leftJoin('t.articles', 'a')
             ->addSelect('a')
-            ->orderBy('c.createdAt', 'DESC');
+            ->orderBy('t.createdAt', 'DESC');
+
     }
 }

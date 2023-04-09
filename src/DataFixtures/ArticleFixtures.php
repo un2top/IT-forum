@@ -3,11 +3,14 @@
 namespace App\DataFixtures;
 
 use App\Entity\Comment;
+use App\Entity\Tag;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use App\Entity\Article;
+use function Sodium\add;
 
 
-class ArticleFixtures extends BaseFixtures
+class ArticleFixtures extends BaseFixtures implements DependentFixtureInterface
 {
     private static $articleTitles = [
         'Новости в мире IT',
@@ -60,6 +63,14 @@ class ArticleFixtures extends BaseFixtures
             for ($i = 0; $i < $this->faker->numberBetween(2, 10); $i++) {
                 $this->addComment($article, $manager);
             }
+            /** @var Tag[] $tags */
+            $tags = [];
+            for($i=0;$i<$this->faker->numberBetween(0,5);$i++){
+                $tags[]= $this->getRandomReference(Tag::class);
+            }
+            foreach ($tags as $tag){
+                $article->addTag($tag);
+            }
 
         });
     }
@@ -88,4 +99,12 @@ class ArticleFixtures extends BaseFixtures
 
         $manager->persist($comment);
     }
+
+    public function getDependencies()
+    {
+        return [
+            TagFixtures::class,
+        ];
+    }
+
 }
