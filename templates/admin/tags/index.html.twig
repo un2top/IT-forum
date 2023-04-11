@@ -1,0 +1,29 @@
+{% extends 'partial/tags_comment_filter.html.twig' %}
+{% block admin_title %}Управление тегами{% endblock %}
+{% block admin_table %}
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Тег</th>
+            <th>Описание</th>
+            <th>Количество статей</th>
+            <th>Название статей</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for tag in pagination %}
+            <tr>
+                <td>{{ tag.name }}</a></td>
+                <td>{{ tag.slug }} {% if tag.deletedAt %} <b>DELETED</b> {% endif %}</td>
+                <td>{{ tag.articles|length }}</td>
+                <td>{% for articlename in tag.articles %}
+                        {{ articlename.title }}<br>{% endfor %}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">Нет коментариев</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
