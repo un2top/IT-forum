@@ -2,8 +2,9 @@
 
 namespace App\Controller;
 
+
 use App\Entity\Article;
-use App\Homework\ArticleContentProvider;
+use App\Homework\ArticleContentProviderInterface;
 use App\Repository\ArticleRepository;
 use App\Repository\CommentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,31 +16,41 @@ class ArticleController extends AbstractController
     /**
      * @Route("/", name="app_homepage")
      */
-    public function homepage(ArticleRepository $repository, CommentRepository $commentRepository)
+    public function homepage(ArticleRepository $articleRepository, CommentRepository $commentRepository)
     {
-        $comments = $commentRepository->findBy([], ['createdAt' => 'DESC'], 3);
-        $articles = $repository->findLatestPublished();
-        return $this->render('articles/homepage.html.twig', ['articles' => $articles, 'comments' => $comments]);
+        $articles = $articleRepository->findLatestPublished();
+        $comments = $commentRepository->findThreeLatest();
+        
+        return $this->render('article/homepage.html.twig', [
+            'articles' => $articles,
+            'comments' => $comments,
+        ]);
     }
+
 
     /**
      * @Route("/articles/article_content", name="app_article_content")
      */
-    public function articleContent(Request $request, ArticleContentProvider $articleContentProvider)
+    public function articleContent(Request $request, ArticleContentProviderInterface $articleContentProvider)
     {
-        $colParagraph = $request->query->get('col_paragraph');
-        $inputs = $request->query->get('inputs');
-        $colRepeat = $request->query->get('col_repeat');
-        $articleContent = $articleContentProvider->get($colParagraph, $inputs, $colRepeat);
-        return $this->render('articles/article_content.html.twig', ['articleContent' => $articleContent]);
-    }
+        $paragraphs = (int)$request->get('paragraphs');
+        $word       = $request->get('word');
+        $wordsCount = (int)$request->get('wordsCount');
 
+        $articleContent = $articleContentProvider->get($paragraphs, $word, $wordsCount);
+
+        return $this->render('article/content.html.twig', [
+            'articleContent' => $articleContent,
+        ]);
+    }
+    
     /**
-     * @Route("/articles/{slug}", name="app_article_show")
+     * @Route("/articles/{slug}", name="app_article")
      */
     public function show(Article $article)
     {
-        return $this->render('articles/show.html.twig', ['article' => $article]);
+        return $this->render('article/show.html.twig', [
+            'article' => $article,
+        ]);
     }
-
 }

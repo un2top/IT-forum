@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Homework\ArticleContentProvider;
+use App\Homework\ArticleContentProviderInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,44 +13,41 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class ArticleContentProviderCommand extends Command
 {
     protected static $defaultName = 'app:article:content_provider';
-    protected static $defaultDescription = 'Выводит текст статьи';
+    /**
+     * @var ArticleContentProviderInterface
+     */
+    private ArticleContentProviderInterface $articleContentProvider;
 
-    private $articleContentProvider;
-
-
-    public function __construct(ArticleContentProvider $articleContentProvider)
+    /**
+     * ArticleContentProviderCommand constructor.
+     * @param ArticleContentProviderInterface $articleContentProvider
+     */
+    public function __construct(ArticleContentProviderInterface $articleContentProvider)
     {
         $this->articleContentProvider = $articleContentProvider;
         parent::__construct();
     }
 
-    protected function configure(): void
+    protected function configure()
     {
         $this
-            ->addArgument('paragraphs', InputArgument::REQUIRED, 'Количество абзацев')
-            ->addArgument('word', InputArgument::OPTIONAL, 'ключевое слово')
-            ->addArgument('wordsCount', InputArgument::OPTIONAL, 'количество ключевых слов', 0)
-            ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
+            ->setDescription('Add a short description for your command')
+            ->addArgument('paragraphs', InputArgument::REQUIRED, 'Количество параграфов')
+            ->addArgument('word', InputArgument::OPTIONAL, 'Вставляемое слово')
+            ->addArgument('wordsCount', InputArgument::OPTIONAL, 'Количество вставляемых слов')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $paragraphs = $input->getArgument('paragraphs');
+        $paragraphs = (int)$input->getArgument('paragraphs');
         $word = $input->getArgument('word');
-        $wordsCount = $input->getArgument('wordsCount');
+        $wordsCount = (int)$input->getArgument('wordsCount');
 
 
-            $io->note(sprintf('Text:'.$this->articleContentProvider->get($paragraphs,$word, $wordsCount)));
+        $output->writeln($this->articleContentProvider->get($paragraphs, $word, $wordsCount));
 
-
-        if ($input->getOption('option1')) {
-            // ...
-        }
-
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
-
-        return Command::SUCCESS;
+        return 0;
     }
 }

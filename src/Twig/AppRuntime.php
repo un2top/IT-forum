@@ -2,6 +2,7 @@
 
 namespace App\Twig;
 
+
 use App\Service\MarkdownParser;
 use Twig\Extension\RuntimeExtensionInterface;
 
@@ -18,5 +19,4 @@ class AppRuntime implements RuntimeExtensionInterface
     {
         return $this->markdownParser->parse($content);
     }
-
 }

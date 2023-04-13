@@ -7,8 +7,6 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Tag>
- *
  * @method Tag|null find($id, $lockMode = null, $lockVersion = null)
  * @method Tag|null findOneBy(array $criteria, array $orderBy = null)
  * @method Tag[]    findAll()
@@ -21,31 +19,20 @@ class TagRepository extends ServiceEntityRepository
         parent::__construct($registry, Tag::class);
     }
 
-    public function add(Tag $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function remove(Tag $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
     public function findAllWithSearchQuery(?string $search, bool $withSoftDeletes = false)
     {
         $qb = $this->createQueryBuilder('t');
+
+        $qb
+            ->innerJoin('t.articles', 'a')
+            ->addSelect('a')
+        ;
+
         if ($search) {
             $qb
-                ->andWhere('t.slug LIKE :search OR t.name LIKE :search')
-                ->setParameter('search', "%$search%");
+                ->andWhere('t.name LIKE :search OR t.slug LIKE :search OR a.title LIKE :search')
+                ->setParameter('search', '%' . $search . '%')
+            ;
         }
 
         if ($withSoftDeletes) {
@@ -53,9 +40,7 @@ class TagRepository extends ServiceEntityRepository
         }
 
         return $qb
-            ->leftJoin('t.articles', 'a')
-            ->addSelect('a')
-            ->orderBy('t.createdAt', 'DESC');
-
+            ->orderBy('t.createdAt', 'DESC')
+        ;
     }
 }

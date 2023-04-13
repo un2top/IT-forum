@@ -13,26 +13,14 @@ class TagsController extends AbstractController
     /**
      * @Route("/admin/tags", name="app_admin_tags")
      */
-    public function index(Request $request, TagRepository $tagRepository, PaginatorInterface $paginator)
+    public function index(TagRepository $tagRepository, Request $request, PaginatorInterface $paginator)
     {
 
-
-        $tags = $tagRepository->findAllWithSearchQuery(
-            $request->query->get('q'),
-            $request->query->has('showDeleted'),
-        );
-
-        $countString = 20;
-        if ($request->query->get('count')) {
-            $countString = $request->query->get('count');
-        }
-
         $pagination = $paginator->paginate(
-            $tags, /* query NOT result */
-            $request->query->getInt('page', 1), /*page number*/
-            $countString /*limit per page*/
+            $tagRepository->findAllWithSearchQuery($request->query->get('q'), $request->query->has('showDeleted')),
+            $request->query->getInt('page', 1),
+            $request->query->getInt('limit', 20)
         );
-
 
         return $this->render('admin/tags/index.html.twig', [
             'pagination' => $pagination,

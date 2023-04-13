@@ -2,6 +2,7 @@
 
 namespace App\Homework;
 
+
 class PasteWords
 {
     public function paste(string $text, string $word, int $wordsCount = 1): string
@@ -17,6 +18,5 @@ class PasteWords
         }
 
         return implode(' ', $words);
-    }
-
+    } 
 }

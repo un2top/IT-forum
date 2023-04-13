@@ -18,9 +18,10 @@ class Tag
 {
     use TimestampableEntity;
     use SoftDeleteableEntity;
+
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
     private $id;
@@ -76,7 +77,7 @@ class Tag
     }
 
     /**
-     * @return Collection<int, Article>
+     * @return Collection|Article[]
      */
     public function getArticles(): Collection
     {
@@ -95,7 +96,8 @@ class Tag
 
     public function removeArticle(Article $article): self
     {
-        if ($this->articles->removeElement($article)) {
+        if ($this->articles->contains($article)) {
+            $this->articles->removeElement($article);
             $article->removeTag($this);
         }
 

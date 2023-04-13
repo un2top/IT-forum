@@ -1,7 +1,3 @@
-{% if tags|length %}
-    <div class="mb-1 d-flex">
-        {% for tag in tags %}
-            <span class="badge badge-pill badge-secondary mr-2">{{ tag.name }}</span>
-        {% endfor %}
-    </div>
-{% endif %}
+{% for tag in tags %}
+    <span class="badge badge-pill badge-secondary mr-2">{{ tag.name }}</span>
+{%  endfor %}

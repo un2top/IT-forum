@@ -2,61 +2,46 @@
 
 namespace App\DataFixtures;
 
-use App\Homework\ArticleContentProvider;
-use App\Homework\CommentContentProvider;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\Common\Persistence\ObjectManager;
 use Faker\Factory;
+use Faker\Generator;
 
 abstract class BaseFixtures extends Fixture
 {
-    /**
-     * @var \Faker\Generator
-     */
+    /** @var Generator */
     protected $faker;
-    /**
-     * @var ObjectManager
-     */
+    /** @var ObjectManager */
     protected $manager;
-    /**
-     * @var ArticleContentProvider
-     */
-    protected $articleContent;
-    /**
-     * @var CommentContentProvider
-     */
-    protected $commentContentProvider;
 
-    public function __construct(ArticleContentProvider $articleContent, CommentContentProvider $commentContentProvider)
-    {
-        $this->articleContent = $articleContent;
-        $this->commentContentProvider = $commentContentProvider;
-    }
-
-    public function load(ObjectManager $manager): void
+    public function load(ObjectManager $manager)
     {
         $this->faker = Factory::create();
         $this->manager = $manager;
+        
         $this->loadData($manager);
+
         $manager->flush();
     }
-
+    
     abstract function loadData(ObjectManager $manager);
-
+    
     protected function create(string $className, callable $factory)
     {
         $entity = new $className();
         $factory($entity);
+
         $this->manager->persist($entity);
+        
         return $entity;
-
     }
-
+    
     protected function createMany(string $className, int $count, callable $factory)
     {
         for ($i = 0; $i < $count; $i++) {
             $entity = $this->create($className, $factory);
-            $this->addReference($className .  "|$i", $entity);
+
+            $this->addReference($className . "|$i", $entity);
         }
     }
 
@@ -64,8 +49,9 @@ abstract class BaseFixtures extends Fixture
 
     protected function getRandomReference($className)
     {
-        if (!isset($this->referencesIndex[$className])) {
+        if (! isset($this->referencesIndex[$className])) {
             $this->referencesIndex[$className] = [];
+            
             foreach ($this->referenceRepository->getReferences() as $key => $reference) {
                 if (strpos($key, $className . '|') === 0) {
                     $this->referencesIndex[$className][] = $key;
@@ -76,8 +62,9 @@ abstract class BaseFixtures extends Fixture
         if (empty($this->referencesIndex[$className])) {
             throw new \Exception('Не найдены ссылки на класс: ' . $className);
         }
-
+        
         return $this->getReference($this->faker->randomElement($this->referencesIndex[$className]));
     }
+
 
 }

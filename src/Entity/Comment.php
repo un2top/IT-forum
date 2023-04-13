@@ -16,9 +16,10 @@ class Comment
 {
     use TimestampableEntity;
     use SoftDeleteableEntity;
+    
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
     private $id;
@@ -79,5 +80,4 @@ class Comment
 
         return $this;
     }
-
 }

@@ -2,16 +2,13 @@
 
 namespace App\Homework;
 
+
+use function count;
+
 class ArticleProvider
 {
-    public function article(){
-        $articles = $this->articles();
-        return $articles[array_rand($articles,1)];
-
-
-    }
-
-    public function articles(){
+    public function articles()
+    {
         return [
             [
                 'title' => 'Что делать, если надо верстать?',
@@ -26,21 +23,24 @@ class ArticleProvider
             [
                 'title' => 'Когда пролил кофе на клавиатуру',
                 'image' => 'images/article-3.jpg',
-                'slug'  => 'when-i-spilled-coffee-on-the-keyboard',
+                'slug'  => 'what-to-do-if-need-fronted',
             ],
             [
-                'title' => 'Что делать, если хочется спать?',
-                'image' => 'images/article-4.jpg',
-                'slug'  => 'what-to-do-if-want-sleep',
+                'title' => 'Что делать, если надо верстать?',
+                'image' => 'images/article-2.jpeg',
+                'slug'  => 'what-to-do-if-need-fronted',
             ],
             [
-                'title' => 'Когда перепутал соусы',
-                'image' => 'images/article-5.jpg',
-                'slug'  => 'when-mixed-sauces',
+                'title' => 'Когда пролил кофе на клавиатуру',
+                'image' => 'images/article-3.jpg',
+                'slug'  => 'what-to-do-if-need-fronted',
             ],
-
-
         ];
     }
-
+    
+    public function article()
+    {
+        $articles = $this->articles();
+        return $articles[rand(0, count($articles) - 1)];
+    }
 }

@@ -7,8 +7,6 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Comment>
- *
  * @method Comment|null find($id, $lockMode = null, $lockVersion = null)
  * @method Comment|null findOneBy(array $criteria, array $orderBy = null)
  * @method Comment[]    findAll()
@@ -20,41 +18,46 @@ class CommentRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Comment::class);
     }
-
-    public function add(Comment $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function remove(Comment $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
+    
     public function findAllWithSearchQuery(?string $search, bool $withSoftDeletes = false)
     {
         $qb = $this->createQueryBuilder('c');
+        
+        $qb
+            ->innerJoin('c.article', 'a')
+            ->addSelect('a')
+        ;
+        
         if ($search) {
             $qb
                 ->andWhere('c.content LIKE :search OR c.authorName LIKE :search OR a.title LIKE :search')
-                ->setParameter('search', "%$search%");
+                ->setParameter('search', '%' . $search . '%')
+            ;
         }
-
+        
         if ($withSoftDeletes) {
             $this->getEntityManager()->getFilters()->disable('softdeleteable');
         }
-
+        
         return $qb
+            ->orderBy('c.createdAt', 'DESC')
+        ;
+    }
+    
+    public function findThreeLatest()
+    {
+        $qb = $this->createQueryBuilder('c');
+        
+        $qb
             ->innerJoin('c.article', 'a')
             ->addSelect('a')
-            ->orderBy('c.createdAt', 'DESC');
+        ;
+        
+        return $qb
+            ->orderBy('c.createdAt', 'DESC')
+            ->setMaxResults(3)
+            ->getQuery()
+            ->getResult()
+        ;
     }
 }
