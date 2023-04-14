@@ -40,9 +40,9 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
     private $passwordEncoder;
 
     public function __construct(
-        UserRepository $userRepository,
-        UrlGeneratorInterface $urlGenerator,
-        CsrfTokenManagerInterface $csrfTokenManager,
+        UserRepository               $userRepository,
+        UrlGeneratorInterface        $urlGenerator,
+        CsrfTokenManagerInterface    $csrfTokenManager,
         UserPasswordEncoderInterface $passwordEncoder
     )
     {
@@ -64,7 +64,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
 
     public function getCredentials(Request $request)
     {
-        $credentials= [
+        $credentials = [
             'email' => $request->request->get('email'),
             'password' => $request->request->get('password'),
             'csrf_token' => $request->request->get('_csrf_token'),
@@ -80,12 +80,12 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
         $csrfToken = new CsrfToken('authenticate', $credentials['csrf_token']);
-        if(! $this->csrfTokenManager->isTokenValid($csrfToken)){
+        if (!$this->csrfTokenManager->isTokenValid($csrfToken)) {
             throw new InvalidCsrfTokenException();
         }
-        $guest =$this->userRepository->findOneBy(['email' => $credentials['email']]);
+        $guest = $this->userRepository->findOneBy(['email' => $credentials['email']]);
 
-        if($guest->getIsActive()==false){
+        if ($guest && $guest->getIsActive() == false) {
             throw new CustomUserMessageAuthenticationException('Уходи бабайка!');
         }
 
@@ -100,7 +100,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $providerKey)
     {
         $path = $this->getTargetPath($request->getSession(), $providerKey);
-        return new RedirectResponse($path? : $this->urlGenerator->generate('app_homepage'));
+        return new RedirectResponse($path ?: $this->urlGenerator->generate('app_homepage'));
     }
 
 }
