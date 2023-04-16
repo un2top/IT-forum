@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\Article;
 use App\Entity\Comment;
 use App\Entity\Tag;
+use App\Entity\User;
 use App\Homework\ArticleContentProviderInterface;
 use App\Homework\CommentContentProvider;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -16,13 +17,6 @@ class ArticleFixtures extends BaseFixtures implements DependentFixtureInterface
         'Что делать, если надо верстать?',
         'Facebook ест твои данные',
         'Когда пролил кофе на клавиатуру',
-    ];
-
-    private static $articleAuthors = [
-        'Флекс Абсолютович',
-        'Вью j эс',
-        'Фронтенд Фулстэков',
-        'Хэтээмэль Цеэсесович',
     ];
 
     private static $articleImages = [
@@ -64,7 +58,7 @@ class ArticleFixtures extends BaseFixtures implements DependentFixtureInterface
             }
 
             $article
-                ->setAuthor($this->faker->randomElement(self::$articleAuthors))
+                ->setAuthor($this->getRandomReference(User::class))
                 ->setVoteCount($this->faker->numberBetween(-10, 10))
                 ->setImageFilename($this->faker->randomElement(self::$articleImages))
                 ->setKeywords($this->faker->realText(50))
@@ -91,6 +85,7 @@ class ArticleFixtures extends BaseFixtures implements DependentFixtureInterface
     {
         return [
             TagFixtures::class,
+            UserFixtures::class,
         ];
     }
 
@@ -105,7 +100,7 @@ class ArticleFixtures extends BaseFixtures implements DependentFixtureInterface
         }
 
         $comment = (new Comment())
-            ->setAuthorName($this->faker->randomElement(self::$articleAuthors))
+            ->setAuthorName($this->faker->name)
             ->setContent($this->commentContentProvider->get($word, $wordsCount))
             ->setCreatedAt($this->faker->dateTimeBetween('-100 days', '-1 day'))
             ->setArticle($article)

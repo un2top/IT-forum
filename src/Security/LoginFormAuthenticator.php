@@ -16,9 +16,11 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
+use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
 class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
 {
+    use TargetPathTrait;
 
     /**
      * @var UserRepository
@@ -38,9 +40,9 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
     private $passwordEncoder;
 
     public function __construct(
-        UserRepository $userRepository,
-        UrlGeneratorInterface $urlGenerator,
-        CsrfTokenManagerInterface $csrfTokenManager,
+        UserRepository               $userRepository,
+        UrlGeneratorInterface        $urlGenerator,
+        CsrfTokenManagerInterface    $csrfTokenManager,
         UserPasswordEncoderInterface $passwordEncoder
     )
     {
@@ -62,7 +64,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
 
     public function getCredentials(Request $request)
     {
-        $credentials= [
+        $credentials = [
             'email' => $request->request->get('email'),
             'password' => $request->request->get('password'),
             'csrf_token' => $request->request->get('_csrf_token'),
@@ -78,12 +80,12 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
         $csrfToken = new CsrfToken('authenticate', $credentials['csrf_token']);
-        if(! $this->csrfTokenManager->isTokenValid($csrfToken)){
+        if (!$this->csrfTokenManager->isTokenValid($csrfToken)) {
             throw new InvalidCsrfTokenException();
         }
-        $guest =$this->userRepository->findOneBy(['email' => $credentials['email']]);
+        $guest = $this->userRepository->findOneBy(['email' => $credentials['email']]);
 
-        if($guest->getIsActive()==false){
+        if ($guest && $guest->getIsActive() == false) {
             throw new CustomUserMessageAuthenticationException('Уходи бабайка!');
         }
 
@@ -97,7 +99,8 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $providerKey)
     {
-        return new RedirectResponse($this->urlGenerator->generate('app_homepage'));
+        $path = $this->getTargetPath($request->getSession(), $providerKey);
+        return new RedirectResponse($path ?: $this->urlGenerator->generate('app_homepage'));
     }
 
 }
