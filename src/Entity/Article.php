@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class Article
 {
     use TimestampableEntity;
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -160,6 +161,11 @@ class Article
         return $this;
     }
 
+    public function isPublished(): bool
+    {
+        return null!==$this->getPublishedAt();
+    }
+
     public function getVoteCount(): ?int
     {
         return $this->voteCount;
@@ -171,13 +177,13 @@ class Article
 
         return $this;
     }
-    
+
     public function voteUp()
     {
         $this->voteCount++;
         return $this;
     }
-    
+
     public function voteDown()
     {
         $this->voteCount--;
@@ -195,12 +201,12 @@ class Article
 
         return $this;
     }
-    
+
     public function getImagePath()
     {
         return 'images/' . $this->getImageFilename();
     }
-    
+
     public function getAuthorAvatarPath()
     {
         return sprintf(
@@ -217,7 +223,7 @@ class Article
     public function setKeywords($keywords)
     {
         $this->keywords = $keywords;
-        
+
         return $this;
     }
 
