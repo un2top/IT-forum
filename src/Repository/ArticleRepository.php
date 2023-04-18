@@ -56,6 +56,22 @@ class ArticleRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
+    public function findAllWithSearchQuery(?string $search)
+    {
+        $qb = $this->createQueryBuilder('a');
+        $qb
+            ->innerJoin('a.author', 'u')
+            ->addSelect('u')
+        ;
+        if ($search) {
+            $qb
+                ->andWhere('u.firstName LIKE :search OR a.title LIKE :search OR a.description LIKE :search')
+                ->setParameter('search', '%' . $search . '%')
+            ;
+        }
+        return $qb
+            ->orderBy('a.publishedAt', 'DESC');
+    }
 
     /*
     public function findOneBySomeField($value): ?Article
@@ -74,7 +90,7 @@ class ArticleRepository extends ServiceEntityRepository
         return $this->getOrCreateQueryBuilder($qb)->andWhere('a.publishedAt IS NOT NULL');
     }
     
-    private function latest(QueryBuilder $qb = null)
+    public function latest(QueryBuilder $qb = null)
     {
         return $this->getOrCreateQueryBuilder($qb)->orderBy('a.publishedAt', 'DESC');
     }
