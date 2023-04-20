@@ -2,15 +2,20 @@
 
 namespace App\Entity;
 
+use App\Homework\RegistrationSpamFilter;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @UniqueEntity(fields={"email"}, message="Вы уже зарегестрированы ")
  */
 class User implements UserInterface
 {
@@ -24,6 +29,8 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      * @Groups("main")
+     * @Assert\NotBlank()
+     * @Assert\Email()
      */
     private $email;
 
@@ -89,7 +96,7 @@ class User implements UserInterface
      */
     public function getUsername(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
@@ -116,7 +123,7 @@ class User implements UserInterface
      */
     public function getPassword(): string
     {
-        return (string) $this->password;
+        return (string)$this->password;
     }
 
     public function setPassword(string $password): self
@@ -170,13 +177,13 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getAvatarUrl(string $size=null): string
+    public function getAvatarUrl(string $size = null): string
     {
-        $url= sprintf(
+        $url = sprintf(
             'https://robohash.org/%s.jpg?set=set2',
-            mb_strtolower(str_replace(' ', '_',$this->getFirstName())));
-        if ($size){
-            $url.= "&size={$size}x{$size}";
+            mb_strtolower(str_replace(' ', '_', $this->getFirstName())));
+        if ($size) {
+            $url .= "&size={$size}x{$size}";
         }
 
         return $url;
@@ -240,6 +247,19 @@ class User implements UserInterface
         }
 
         return $this;
+    }
+
+    /**
+     * @Assert\Callback()
+     */
+    public function validate(ExecutionContextInterface $context, $payload)
+    {
+        $spamFilter = new RegistrationSpamFilter();
+        if ($spamFilter->filter($this->getEmail())) {
+            $context->buildViolation('Ботам здесь не место')
+                ->atPath('email')
+                ->addViolation();
+        }
     }
 
 }

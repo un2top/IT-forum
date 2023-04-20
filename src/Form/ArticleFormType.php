@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Length;
 
 class ArticleFormType extends AbstractType
 {
@@ -30,10 +31,22 @@ class ArticleFormType extends AbstractType
         $builder
             ->add('title', TextType:: class, [
                 'label' => 'Название статьи',
+                'constraints'=>[
+                    new Length([
+                        'min' => 3,
+                        'minMessage' => 'название стетьи должено быть длиной не меньше 3-х символов',
+                    ]),
+                ]
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Описание статьи',
-                'attr' => ['rows' => '3']
+                'attr' => ['rows' => '3'],
+                'constraints'=>[
+                    new Length([
+                        'max' => 100,
+                        'minMessage' => 'описание стетьи должено быть длиной не больше 100 символов',
+                    ]),
+                ]
             ])
             ->add('body', TextareaType::class, [
                 'label' => 'Содержимое статьи',
@@ -44,7 +57,8 @@ class ArticleFormType extends AbstractType
                 'label' => 'Дата публикации статьи'
             ])
             ->add('keywords', TextType:: class, [
-                'label' => 'Ключевые слова статьи'
+                'label' => 'Ключевые слова статьи',
+                'required'=>false,
             ])
             ->add('author', EntityType::class, [
                 'class' => User::class,
@@ -53,7 +67,8 @@ class ArticleFormType extends AbstractType
                 },
                 'placeholder'=>'Выберите автора статьи',
                 'choices'=>$this->repository->findAllSortedByNAme(),
-                'label' => 'Автор статьи'
+                'label' => 'Автор статьи',
+                'invalid_message'=>'Такого автора не существует',
             ]);
     }
 
