@@ -54,15 +54,27 @@ class ArticleController extends AbstractController
             return $this->redirectToRoute('app_admin_articles');
         }
 
-        return $this->render('admin/article/create.html.twig', ['articleForm' => $form->createView(),]);
+        return $this->render('admin/article/create.html.twig', ['articleForm' => $form->createView(),'show_Error'=>$form->isSubmitted(),]);
     }
 
     /**
      * @Route("/admin/articles/{id}/edit", name="app_admin_article_edit")
      * @IsGranted ("MANAGE", subject="article")
      */
-    public function edit(Article $article): Response
+    public function edit(Article $article, EntityManagerInterface $em, Request $request, ArticleWordsFilter $filter): Response
     {
-        return new Response('Страница редактирования статьи ' . $article->getTitle());
+        $form = $this->createForm(ArticleFormType::class, $article);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var Article $article */
+            $article = $form->getData();
+            $article->setDescription($filter->filter($article->getDescription(), $filter->words));
+            $article->setBody($filter->filter($article->getBody(), $filter->words));
+            $em->persist($article);
+            $em->flush();
+            $this->addFlash('flash_message', 'Статья успешно изменена');
+            return $this->redirectToRoute('app_admin_article_edit', ['id'=>$article->getId()]);
+        }
+        return $this->render('admin/article/edit.html.twig', ['articleForm' => $form->createView(), 'show_Error'=>$form->isSubmitted(),]);
     }
 }

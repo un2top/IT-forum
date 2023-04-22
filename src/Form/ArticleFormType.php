@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Length;
 
 class ArticleFormType extends AbstractType
 {
@@ -27,24 +28,41 @@ class ArticleFormType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        /** @var Article|null $article */
+        $article = $options['data']??null;
+        $cannotEdit = $article && $article->getId() && $article->isPublished();
         $builder
             ->add('title', TextType:: class, [
                 'label' => 'Название статьи',
+                'constraints'=>[
+                    new Length([
+                        'min' => 3,
+                        'minMessage' => 'название стетьи должено быть длиной не меньше 3-х символов',
+                    ]),
+                ]
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Описание статьи',
-                'attr' => ['rows' => '3']
+                'attr' => ['rows' => '3'],
+                'constraints'=>[
+                    new Length([
+                        'max' => 100,
+                        'minMessage' => 'описание стетьи должено быть длиной не больше 100 символов',
+                    ]),
+                ]
             ])
             ->add('body', TextareaType::class, [
                 'label' => 'Содержимое статьи',
-                'attr' => ['rows' => '10']
+                'attr' => ['rows' => '10'],
             ])
             ->add('publishedAt', null, [
                 'widget' => 'single_text',
-                'label' => 'Дата публикации статьи'
+                'label' => 'Дата публикации статьи',
+                'disabled'=>$cannotEdit,
             ])
             ->add('keywords', TextType:: class, [
-                'label' => 'Ключевые слова статьи'
+                'label' => 'Ключевые слова статьи',
+                'required'=>false,
             ])
             ->add('author', EntityType::class, [
                 'class' => User::class,
@@ -53,7 +71,9 @@ class ArticleFormType extends AbstractType
                 },
                 'placeholder'=>'Выберите автора статьи',
                 'choices'=>$this->repository->findAllSortedByNAme(),
-                'label' => 'Автор статьи'
+                'label' => 'Автор статьи',
+                'invalid_message'=>'Такого автора не существует',
+                'disabled'=>$cannotEdit,
             ]);
     }
 

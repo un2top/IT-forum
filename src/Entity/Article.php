@@ -8,9 +8,12 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ArticleRepository")
+ * @Assert\EnableAutoMapping()
  */
 class Article
 {
@@ -25,6 +28,7 @@ class Article
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Нужно корректное имя статьи")
      * @Groups("main")
      */
     private $title;
@@ -33,18 +37,37 @@ class Article
      * @ORM\Column(type="string", length=100, unique=true)
      * @Gedmo\Slug(fields={"title"})
      * @Groups("main")
+     * @Assert\DisableAutoMapping()
      */
     private $slug;
 
     /**
+     * @var \DateTime
+     * @Gedmo\Timestampable(on="create")
+     * @ORM\Column(type="datetime")
+     * @Assert\DisableAutoMapping()
+     */
+    protected $createdAt;
+
+    /**
+     * @var \DateTime
+     * @Gedmo\Timestampable(on="update")
+     * @ORM\Column(type="datetime")
+     * @Assert\DisableAutoMapping()
+     */
+    protected $updatedAt;
+
+    /**
      * @ORM\Column(type="string", length=100)
      * @Groups("main")
+     * @Assert\NotBlank()
      */
     private $description;
 
     /**
      * @ORM\Column(type="text")
      * @Groups("main")
+     * @Assert\NotBlank()
      */
     private $body;
 
@@ -55,7 +78,7 @@ class Article
     private $publishedAt;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups("main")
      */
     private $keywords;
@@ -86,6 +109,7 @@ class Article
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="articles")
      * @ORM\JoinColumn(nullable=false)
+     * @Assert\NotBlank()
      */
     private $author;
 
@@ -105,7 +129,7 @@ class Article
         return $this->title;
     }
 
-    public function setTitle(string $title): self
+    public function setTitle(?string $title): self
     {
         $this->title = $title;
 
@@ -163,7 +187,7 @@ class Article
 
     public function isPublished(): bool
     {
-        return null!==$this->getPublishedAt();
+        return null !== $this->getPublishedAt();
     }
 
     public function getVoteCount(): ?int
@@ -294,5 +318,21 @@ class Article
         $this->author = $author;
 
         return $this;
+    }
+
+    /**
+     * @Assert\Callback()
+     */
+    public function validate(ExecutionContextInterface $context, $payload)
+    {
+        $numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+        foreach ($numbers as $number) {
+            if (mb_strpos($this->getTitle(), $number)!==false) {
+                $context->buildViolation('Нельзя вводить цифры в названии статьи')
+                    ->atPath('title')
+                    ->addViolation();
+                return false;
+            }
+        }
     }
 }
