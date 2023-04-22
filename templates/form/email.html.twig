@@ -1,6 +1,5 @@
 <div class="form-group">
     {{ form_label(registrationForm.email, 'Ввидите ваш Email') }}
-    {{ form_errors(registrationForm.email) }}
     <div class="input-group mb-2">
         {% if registrationForm.email.vars.symbol is not null %}
             <div class="input-group-prepend">
