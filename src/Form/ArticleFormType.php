@@ -28,6 +28,9 @@ class ArticleFormType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        /** @var Article|null $article */
+        $article = $options['data']??null;
+        $cannotEdit = $article && $article->getId() && $article->isPublished();
         $builder
             ->add('title', TextType:: class, [
                 'label' => 'Название статьи',
@@ -50,11 +53,12 @@ class ArticleFormType extends AbstractType
             ])
             ->add('body', TextareaType::class, [
                 'label' => 'Содержимое статьи',
-                'attr' => ['rows' => '10']
+                'attr' => ['rows' => '10'],
             ])
             ->add('publishedAt', null, [
                 'widget' => 'single_text',
-                'label' => 'Дата публикации статьи'
+                'label' => 'Дата публикации статьи',
+                'disabled'=>$cannotEdit,
             ])
             ->add('keywords', TextType:: class, [
                 'label' => 'Ключевые слова статьи',
@@ -69,6 +73,7 @@ class ArticleFormType extends AbstractType
                 'choices'=>$this->repository->findAllSortedByNAme(),
                 'label' => 'Автор статьи',
                 'invalid_message'=>'Такого автора не существует',
+                'disabled'=>$cannotEdit,
             ]);
     }
 
