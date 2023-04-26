@@ -129,6 +129,19 @@
     "laminas/laminas-zendframework-bridge": {
         "version": "1.0.3"
     },
+    "liip/imagine-bundle": {
+        "version": "2.7",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "1.8",
+            "ref": "d1227d002b70d1a1f941d91845fcd7ac7fbfc929"
+        },
+        "files": [
+            "./config/packages/liip_imagine.yaml",
+            "./config/routes/liip_imagine.yaml"
+        ]
+    },
     "monolog/monolog": {
         "version": "2.0.2"
     },
@@ -137,6 +150,18 @@
     },
     "nikic/php-parser": {
         "version": "v4.4.0"
+    },
+    "oneup/flysystem-bundle": {
+        "version": "3.7",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "3.0",
+            "ref": "e6c6440b279273a468e1f570b0fc1d4ff54ad69e"
+        },
+        "files": [
+            "./config/packages/oneup_flysystem.yaml"
+        ]
     },
     "php": {
         "version": "7.4"

@@ -1,6 +1,10 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Изменения статьи{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset('js/bootstrap_file_field.js') }}"></script>
+{% endblock %}
 
 {% block body %}
     <div class="container">
@@ -17,15 +21,11 @@
         <div class="row">
             <div class="col-12">
                 <div class="p-4 border rounded-lg mb-4 shadow-sm bg-white">
-
                     <h1>Изменение статьи</h1>
                     {% include 'admin/article/form.html.twig' with  {button_text: 'Изменить'} %}
                 </div>
-                </form>
             </div>
         </div>
-    </div>
-
     </div>
 
 {% endblock %}
