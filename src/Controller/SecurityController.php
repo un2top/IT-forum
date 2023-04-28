@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Form\Model\UserRegistrationFormModel;
 use App\Form\UserRegistrationFormType;
 use App\Security\LoginFormAuthenticator;
+use App\Service\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,7 +43,8 @@ class SecurityController extends AbstractController
         UserPasswordEncoderInterface $passwordEncoder,
         GuardAuthenticatorHandler    $guard,
         LoginFormAuthenticator       $authenticator,
-        EntityManagerInterface       $em
+        EntityManagerInterface       $em,
+        Mailer                       $mailer
     )
     {
         $form = $this->createForm(UserRegistrationFormType::class);
@@ -50,13 +52,15 @@ class SecurityController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var UserRegistrationFormModel $userModel */
             $userModel = $form->getData();
-            $user= new User();
+            $user = new User();
             $user
                 ->setEmail($userModel->email)
                 ->setFirstName($userModel->firstName)
                 ->setPassword($passwordEncoder->encodePassword($user, $userModel->plainPassword));
             $em->persist($user);
             $em->flush();
+            $mailer->sendWelcomeMail($user);
+
 
             return $guard->authenticateUserAndHandleSuccess(
                 $user,

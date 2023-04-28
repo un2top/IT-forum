@@ -1,0 +1,27 @@
+{% extends 'email/emailBase.html.twig' %}
+{% block content_title_name %}Добро пожаловать{% endblock %}
+{% block content_name %}Добро пожаловать{% endblock %}
+{% block content %}
+<body>
+
+<table class="body-wrap">
+    <tr>
+        <td></td>
+        <td class="container">
+            <div class="content">
+                <table>
+                    <tr>
+                        <td>
+                            <h1>Добро пожаловать, {{ email.toName }}!</h1>
+                            <p class="lead">Наконец-таки вы с нами. Переходите скорее на сайт.</p>
+                            <a class="btn" href="{{ url('app_homepage') }}">На сайт</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+        <td></td>
+    </tr>
+</table>
+{% endblock %}
+

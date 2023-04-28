@@ -28,7 +28,8 @@ class UserFixtures extends BaseFixtures
                 ->setFirstName('admin')
                 ->setEmail('admin@symfony.skillbox')
                 ->setPassword($this->passwordEncoder->encodePassword($user, '54321'))
-                ->setRoles(["ROLE_ADMIN"]);
+                ->setRoles(["ROLE_ADMIN"])
+                ->setIsActive(true);
 
             $manager->persist(new ApiToken($user));
 
@@ -38,7 +39,8 @@ class UserFixtures extends BaseFixtures
                 ->setFirstName('api')
                 ->setEmail('api@symfony.skillbox')
                 ->setPassword($this->passwordEncoder->encodePassword($user, '54321'))
-                ->setRoles(["ROLE_API"]);
+                ->setRoles(["ROLE_API"])
+                ->setIsActive(true);
 
             for($i=0;$i<3;$i++){
                 $manager->persist(new ApiToken($user));
