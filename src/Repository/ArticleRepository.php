@@ -20,9 +20,9 @@ class ArticleRepository extends ServiceEntityRepository
         parent::__construct($registry, Article::class);
     }
 
-     /**
-      * @return Article[] Returns an array of Article objects
-      */
+    /**
+     * @return Article[] Returns an array of Article objects
+     */
     public function findLatestPublished()
     {
         return $this->published($this->latest())
@@ -31,43 +31,69 @@ class ArticleRepository extends ServiceEntityRepository
             ->leftJoin('a.tags', 't')
             ->addSelect('t')
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
-    
-     /**
-      * @return Article[] Returns an array of Article objects
-      */
+
+    public function findAllPublishedLastWeek()
+    {
+        return $this->published($this->latest())
+            ->andWhere('a.publishedAt >= :week_ago')
+            ->setParameter('week_ago', new \DateTime('-1 week'))
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findAllPublishedFromInterval(string $dateFrom, string $dateTo)
+    {
+        return $this->published($this->latest())
+            ->andWhere('a.publishedAt >= :dateFrom AND a.publishedAt <= :dateTo ')
+            ->setParameter('dateFrom', $dateFrom)
+            ->setParameter('dateTo', $dateTo)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findAllCreatedFromInterval(string $dateFrom, string $dateTo)
+    {
+        return $this->createQueryBuilder('a')
+            ->orderBy('a.createdAt', 'DESC')
+            ->andWhere('a.createdAt >= :dateFrom AND a.createdAt<= :dateTo')
+            ->setParameter('dateFrom', $dateFrom)
+            ->setParameter('dateTo', $dateTo)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return Article[] Returns an array of Article objects
+     */
     public function findLatest()
     {
         return $this->latest()
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
-    
-     /**
-      * @return Article[] Returns an array of Article objects
-      */
+
+    /**
+     * @return Article[] Returns an array of Article objects
+     */
     public function findPublished()
     {
-        return $this->published()            
+        return $this->published()
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
+
     public function findAllWithSearchQuery(?string $search)
     {
         $qb = $this->createQueryBuilder('a');
         $qb
             ->innerJoin('a.author', 'u')
-            ->addSelect('u')
-        ;
+            ->addSelect('u');
         if ($search) {
             $qb
                 ->andWhere('u.firstName LIKE :search OR a.title LIKE :search OR a.description LIKE :search')
-                ->setParameter('search', '%' . $search . '%')
-            ;
+                ->setParameter('search', '%' . $search . '%');
         }
         return $qb
             ->orderBy('a.publishedAt', 'DESC');
@@ -84,12 +110,12 @@ class ArticleRepository extends ServiceEntityRepository
         ;
     }
     */
-    
+
     private function published(QueryBuilder $qb = null)
     {
         return $this->getOrCreateQueryBuilder($qb)->andWhere('a.publishedAt IS NOT NULL');
     }
-    
+
     public function latest(QueryBuilder $qb = null)
     {
         return $this->getOrCreateQueryBuilder($qb)->orderBy('a.publishedAt', 'DESC');
