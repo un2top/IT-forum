@@ -8,8 +8,11 @@ use App\Entity\Tag;
 use App\Entity\User;
 use App\Homework\ArticleContentProviderInterface;
 use App\Homework\CommentContentProvider;
+use App\Service\FileUploader;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\File;
 
 class ArticleFixtures extends BaseFixtures implements DependentFixtureInterface
 {
@@ -24,11 +27,11 @@ class ArticleFixtures extends BaseFixtures implements DependentFixtureInterface
         'article-2.jpeg',
         'article-3.jpg',
     ];
-    
-    
+
+
     private static $words = ['Кофе', 'Клавиатура', 'Пролить', 'Пить', 'Рукопоп'];
-    
-    
+
+
     /**
      * @var ArticleContentProviderInterface
      */
@@ -37,11 +40,19 @@ class ArticleFixtures extends BaseFixtures implements DependentFixtureInterface
      * @var CommentContentProvider
      */
     private $commentContentProvider;
+    /**
+     * @var FileUploader
+     */
+    private $articleFileUploader;
 
-    public function __construct(ArticleContentProviderInterface $articleContentProvider, CommentContentProvider $commentContentProvider)
+    public function __construct(
+        ArticleContentProviderInterface $articleContentProvider,
+        CommentContentProvider          $commentContentProvider,
+        FileUploader                    $articleFileUploader)
     {
         $this->articleContentProvider = $articleContentProvider;
         $this->commentContentProvider = $commentContentProvider;
+        $this->articleFileUploader = $articleFileUploader;
     }
 
     public function loadData(ObjectManager $manager)
@@ -50,19 +61,18 @@ class ArticleFixtures extends BaseFixtures implements DependentFixtureInterface
             $article
                 ->setTitle($this->faker->randomElement(self::$articleTitles))
                 ->setBody($this->getArticleContent())
-                ->setDescription($this->faker->realText(100))
-            ;
+                ->setDescription($this->faker->realText(100));
 
             if ($this->faker->boolean(60)) {
                 $article->setPublishedAt($this->faker->dateTimeBetween('-100 days', '-1 days'));
             }
+            $fileName = $this->faker->randomElement(self::$articleImages);
 
             $article
                 ->setAuthor($this->getRandomReference(User::class))
                 ->setVoteCount($this->faker->numberBetween(-10, 10))
-                ->setImageFilename($this->faker->randomElement(self::$articleImages))
-                ->setKeywords($this->faker->realText(50))
-            ;
+                ->setImageFilename($this->articleFileUploader->uploadFile(new File(dirname(dirname(__DIR__)) . '/' . 'public/images/' . $fileName, $fileName)))
+                ->setKeywords($this->faker->realText(50));
 
             for ($i = 0; $i < $this->faker->numberBetween(2, 10); $i++) {
                 $this->addComment($article, $manager);
@@ -103,8 +113,7 @@ class ArticleFixtures extends BaseFixtures implements DependentFixtureInterface
             ->setAuthorName($this->faker->name)
             ->setContent($this->commentContentProvider->get($word, $wordsCount))
             ->setCreatedAt($this->faker->dateTimeBetween('-100 days', '-1 day'))
-            ->setArticle($article)
-        ;
+            ->setArticle($article);
 
         if ($this->faker->boolean) {
             $comment->setDeletedAt($this->faker->dateTimeThisMonth);
