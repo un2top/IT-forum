@@ -16,14 +16,12 @@ class ArticleController extends AbstractController
     /**
      * @Route("/", name="app_homepage")
      */
-    public function homepage(ArticleRepository $articleRepository, CommentRepository $commentRepository)
+    public function homepage(ArticleRepository $articleRepository)
     {
         $articles = $articleRepository->findLatestPublished();
-        $comments = $commentRepository->findThreeLatest();
         
         return $this->render('article/homepage.html.twig', [
             'articles' => $articles,
-            'comments' => $comments,
         ]);
     }
 

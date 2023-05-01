@@ -80,6 +80,7 @@ class Article
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups("main")
+     * @Assert\NotBlank()
      */
     private $keywords;
 
@@ -232,6 +233,10 @@ class Article
             'https://robohash.org/%s.png?set=set3',
             str_replace(' ', '_', $this->getAuthor())
         );
+    }
+
+    public function __toString() {
+        return $this->getAuthorAvatarPath();
     }
 
     public function getKeywords()

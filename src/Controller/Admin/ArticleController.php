@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Article;
 use App\Entity\User;
+use App\Events\ArticleCreateEvent;
 use App\Form\ArticleFormType;
 use App\Homework\ArticleWordsFilter;
 use App\Repository\ArticleRepository;
@@ -12,6 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,11 +44,12 @@ class ArticleController extends AbstractController
      * @Route("/admin/articles/create", name="app_admin_article_create")
      * @IsGranted ("ROLE_ADMIN_ARTICLE")
      */
-    public function create(EntityManagerInterface $em, Request $request, FileUploader $articleFileUploader): Response
+    public function create(EntityManagerInterface $em, Request $request, FileUploader $articleFileUploader, EventDispatcherInterface $dispatcher): Response
     {
         $form = $this->createForm(ArticleFormType::class, new Article());
         if ($article = $this->handleFormRequest($form, $em, $request, $articleFileUploader)) {
             $this->addFlash('flash_message', 'Статья успешно создана');
+            $dispatcher->dispatch(new ArticleCreateEvent($article));
             return $this->redirectToRoute('app_admin_articles');
         }
         return $this->render('admin/article/create.html.twig', ['articleForm' => $form->createView(), 'show_Error' => $form->isSubmitted(),]);
