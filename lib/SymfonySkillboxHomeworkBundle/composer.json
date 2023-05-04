@@ -1,0 +1,20 @@
+{
+    "name": "symfony-skillbox-homework/unit-factory-bundle",
+    "escription": "Генератор существ",
+    "type": "symfony-bundle",
+    "authors": [
+        {
+            "name": "alexander",
+            "email": "un2top@yandex.ru"
+        }
+    ],
+    "require": {
+        "php": "^7.4"
+    },
+      "autoload": {
+        "psr-4": {
+          "SymfonySkillbox\\SymfonySkillboxHomeworkBundle\\": "src/"
+        }
+      }
+
+}

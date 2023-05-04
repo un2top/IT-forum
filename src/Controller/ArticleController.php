@@ -6,7 +6,6 @@ namespace App\Controller;
 use App\Entity\Article;
 use App\Homework\ArticleContentProviderInterface;
 use App\Repository\ArticleRepository;
-use App\Repository\CommentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;

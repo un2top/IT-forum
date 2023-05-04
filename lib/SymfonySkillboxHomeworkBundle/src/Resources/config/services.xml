@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        https://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+
+        <service  id="symfony_skillbox_homework.unit_factory"
+                 class="SymfonySkillbox\SymfonySkillboxHomeworkBundle\UnitFactory" public="true">
+                 <argument type="service"  id="symfony_skillbox_homework.strategy"/>
+        </service>
+        <service id="SymfonySkillbox\SymfonySkillboxHomeworkBundle\UnitFactory"
+                 alias="symfony_skillbox_homework.unit_factory" public="false"/>
+
+        <service id="symfony_skillbox_homework.strategy"
+                 alias="symfony_skillbox_homework.strategy_strength" public="false"/>
+
+        <service id="symfony_skillbox_homework.strategy_strength"
+                 class="SymfonySkillbox\SymfonySkillboxHomeworkBundle\StrengthStrategy" public="true"/>
+        <service id="SymfonySkillbox\SymfonySkillboxHomeworkBundle\StrengthStrategy"
+                 alias="symfony_skillbox_homework.strategy_strength" public="false"/>
+
+        <service id="symfony_skillbox_homework.health_strategy"
+                 class="SymfonySkillbox\SymfonySkillboxHomeworkBundle\HealthStrategy" public="true"/>
+        <service id="SymfonySkillbox\SymfonySkillboxHomeworkBundle\HealthStrategy"
+                 alias="symfony_skillbox_homework.health_strategy" public="false"/>
+
+        <service id="symfony_skillbox_homework.produce_units_command"
+                 class="SymfonySkillbox\SymfonySkillboxHomeworkBundle\ProduceUnitsCommand" public="true">
+            <tag name="console.command" command="symfony-skillbox-homework:produce-units"/>
+            <argument type="service" id="symfony_skillbox_homework.unit_factory"/>
+        </service>
+
+
+        <service id="symfony_skillbox_homework.base_unit_provider"
+                 class="SymfonySkillbox\SymfonySkillboxHomeworkBundle\BaseUnitProvider" public="true">
+            <tag name="symfony_skillbox_homework.unit_provider"/>
+        </service>
+        <service id="App\Homework\LegacyUnitProvider" public="true">
+            <tag name="symfony_skillbox_homework.unit_provider"/>
+        </service>
+
+    </services>
+</container>
