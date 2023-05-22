@@ -1,0 +1,39 @@
+{% extends 'email/emailBase.html.twig' %}
+{% block content_title_name %}Уведомление о создании новой статьи{% endblock %}
+{% block content_name %}НОВАЯ СТАТЬЯ{% endblock %}
+{% block content %}
+
+    <table class="body-wrap">
+        <tr>
+            <td></td>
+            <td class="container">
+
+                <div class="content">
+                    <table>
+                        <tr>
+                            <td>
+                                <h1>Новая статья на сайте!</h1>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="content">
+                    <table>
+                            <tr>
+                                <td class="small post-image" width="20%"><img src="{{ absolute_url('images/profile.png')}}" alt=""/></td>
+                                <td>
+                                    <h3>{{ article.title}} - </h3>
+                                    <h4>{{ article.author.firstName}}</h4>
+                                    <p class="">{{ article.description}} </p>
+                                    <a class="btn" href="{{ url('app_article', { slug: article.slug }) }}">Читать</a>
+                                </td>
+                            </tr>
+
+                    </table>
+                </div>
+            </td>
+            <td></td>
+        </tr>
+    </table>
+{% endblock %}

@@ -6,7 +6,6 @@ namespace App\Controller;
 use App\Entity\Article;
 use App\Homework\ArticleContentProviderInterface;
 use App\Repository\ArticleRepository;
-use App\Repository\CommentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,14 +15,12 @@ class ArticleController extends AbstractController
     /**
      * @Route("/", name="app_homepage")
      */
-    public function homepage(ArticleRepository $articleRepository, CommentRepository $commentRepository)
+    public function homepage(ArticleRepository $articleRepository)
     {
         $articles = $articleRepository->findLatestPublished();
-        $comments = $commentRepository->findThreeLatest();
         
         return $this->render('article/homepage.html.twig', [
             'articles' => $articles,
-            'comments' => $comments,
         ]);
     }
 

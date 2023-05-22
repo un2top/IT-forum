@@ -1,0 +1,6 @@
+symfony_skillbox_homework:
+
+  # Стратегия производства юнитов (по умолчанию по силе)
+  strategy: 'symfony_skillbox_homework.strategy'
+
+  provider: ['symfony_skillbox_homework.base_unit_provider']

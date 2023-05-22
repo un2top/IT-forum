@@ -17,6 +17,9 @@ class AgoExtension extends AbstractExtension
 
     public function getDiff($value)
     {
-        return Carbon::make($value)->locale('ru')->diffForHumans();
+        if ($value){
+            return Carbon::make($value)->locale('ru')->diffForHumans();
+        }
+        return null;
     }
 }

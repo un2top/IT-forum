@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3d8e47d32e8c884378bef93791119ac0",
+    "content-hash": "7c9bf7782f5ab734063879ac78deaa13",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -3556,6 +3556,33 @@
                 "source": "https://github.com/stof/StofDoctrineExtensionsBundle/tree/v1.5.0"
             },
             "time": "2020-09-30T13:25:17+00:00"
+        },
+        {
+            "name": "symfony-skillbox-homework/unit-factory-bundle",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "lib/SymfonySkillboxHomeworkBundle",
+                "reference": "37aca2fe60b8a0f7f5281c72d6ec9091faed08bc"
+            },
+            "require": {
+                "php": "^7.4"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "SymfonySkillbox\\SymfonySkillboxHomeworkBundle\\": "src/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "alexander",
+                    "email": "un2top@yandex.ru"
+                }
+            ],
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "symfony/asset",
@@ -9170,7 +9197,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "symfony-skillbox-homework/unit-factory-bundle": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
