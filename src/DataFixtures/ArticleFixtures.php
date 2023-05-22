@@ -17,15 +17,18 @@ use Symfony\Component\HttpFoundation\File\File;
 class ArticleFixtures extends BaseFixtures implements DependentFixtureInterface
 {
     private static $articleTitles = [
-        'Что делать, если надо верстать?',
-        'Facebook ест твои данные',
-        'Когда пролил кофе на клавиатуру',
+        'Как обучить свой ИИ?',
+        'Исследование уязвимостей баз данных',
+        'Получение информации из XUQV',
     ];
 
     private static $articleImages = [
-        'article-1.jpeg',
-        'article-2.jpeg',
-        'article-3.jpg',
+        'article-1.jpg',
+        'article-2.jpg',
+        'article-3.jpeg',
+        'article-4.jpg',
+        'article-5.jpg',
+        'article-6.jpg',
     ];
 
 
